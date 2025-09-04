@@ -399,7 +399,7 @@
         <div class="content">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-text">Drop your .mcworld or .mctemplate file here or click to browse</div>
-                <button class="btn">Choose File</button>
+                <button class="btn" id="chooseFileBtn">Choose File</button>
                 <input type="file" class="file-input" id="fileInput" accept=".mcworld,.mctemplate" title="Select .mcworld or .mctemplate file">
             </div>
             
@@ -417,33 +417,76 @@
     </div>
 
     <script>
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        const loading = document.getElementById('loading');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-        const results = document.getElementById('results');
+        // Debug logging
+        console.log('Script starting...');
+        
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing...');
+            
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const chooseFileBtn = document.getElementById('chooseFileBtn');
+            const loading = document.getElementById('loading');
+            const progressContainer = document.getElementById('progressContainer');
+            const progressBar = document.getElementById('progressBar');
+            const results = document.getElementById('results');
+            
+            console.log('Elements found:', {
+                uploadArea: !!uploadArea,
+                fileInput: !!fileInput,
+                chooseFileBtn: !!chooseFileBtn,
+                loading: !!loading,
+                progressContainer: !!progressContainer,
+                progressBar: !!progressBar,
+                results: !!results
+            });
 
-        // File upload handlers
-        uploadArea.addEventListener('click', () => fileInput.click());
-        fileInput.addEventListener('change', handleFile);
+            // Multiple event handlers to ensure click works
+            if (uploadArea && fileInput && chooseFileBtn) {
+                console.log('Adding event listeners...');
+                
+                // Upload area click
+                uploadArea.addEventListener('click', function(e) {
+                    console.log('Upload area clicked');
+                    if (e.target !== chooseFileBtn) {
+                        fileInput.click();
+                    }
+                });
+                
+                // Button click
+                chooseFileBtn.addEventListener('click', function(e) {
+                    console.log('Button clicked');
+                    e.preventDefault();
+                    e.stopPropagation();
+                    fileInput.click();
+                });
+                
+                // File input change
+                fileInput.addEventListener('change', handleFile);
+                
+                // Drag and drop handlers
+                uploadArea.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
 
-        // Drag and drop handlers
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
+                uploadArea.addEventListener('dragleave', function() {
+                    uploadArea.classList.remove('dragover');
+                });
 
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                handleFile({ target: { files: files } });
+                uploadArea.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    const files = e.dataTransfer.files;
+                    if (files.length > 0) {
+                        handleFile({ target: { files: files } });
+                    }
+                });
+                
+                console.log('Event listeners added successfully');
+            } else {
+                console.error('Could not find required elements');
             }
         });
 
@@ -463,6 +506,7 @@
             }
 
             console.log('File type validated, updating UI');
+            const uploadArea = document.getElementById('uploadArea');
             uploadArea.classList.add('file-selected');
             uploadArea.querySelector('.upload-text').textContent = `Selected: ${file.name}`;
             
@@ -472,6 +516,10 @@
 
         function processFile(file) {
             console.log('processFile called with:', file.name);
+            
+            const loading = document.getElementById('loading');
+            const progressContainer = document.getElementById('progressContainer');
+            const results = document.getElementById('results');
             
             try {
                 console.log('Starting processFile execution...');
@@ -488,7 +536,6 @@
                 
                 console.log('Starting zip.loadAsync...');
                 
-                // Use .then() instead of await to avoid async issues
                 zip.loadAsync(file).then(zipContent => {
                     console.log('ZIP loaded successfully, files:', Object.keys(zipContent.files).length);
 
@@ -551,45 +598,12 @@
                     updateProgress(100, 'Complete!');
                     console.log('Progress updated to 100%');
 
-                    // Hide loading first
+                    // Hide loading
                     loading.classList.remove('show');
                     progressContainer.style.display = 'none';
                     
-                    // Add interpretation section manually after a delay
-                    setTimeout(() => {
-                        console.log('Attempting to add interpretation section manually...');
-                        try {
-                            const avgGradeLevel = 4.6; // Using your actual average
-                            const interpretationHtml = `
-                                <div class="analysis-section">
-                                    <h2 class="section-title">Reading Level Interpretation</h2>
-                                    <div class="readability-interpretation">
-                                        <div class="interpretation-section">
-                                            <h4>Reading Level Summary</h4>
-                                            <p><strong>Overall Difficulty:</strong> Very Easy (Flesch Reading Ease: 90.1)</p>
-                                            <p><strong>Average Grade Level:</strong> 4.6 (approximately 10 years old)</p>
-                                            <p><strong>Target Audience:</strong> This content is easily understood by 11-year-olds and below.</p>
-                                        </div>
-                                        
-                                        <div class="interpretation-section">
-                                            <h4>Recommendations</h4>
-                                            <p><strong>Best suited for:</strong> Ages 9-12 (Grades 3-6)</p>
-                                            <p><strong>Educational Context:</strong> Ideal for elementary to middle school students. Content is accessible while still providing educational value.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            `;
-                            
-                            console.log('Adding interpretation HTML...');
-                            results.innerHTML += interpretationHtml;
-                            console.log('Interpretation HTML added successfully');
-                        } catch (e) {
-                            console.error('Error adding manual interpretation:', e);
-                        }
-                    }, 1000);
-
-                    // Call displayAnalysis directly without timeout
-                    console.log('Calling displayAnalysis immediately...');
+                    // Call displayAnalysis
+                    console.log('Calling displayAnalysis...');
                     displayAnalysis(largestLangFile, extractedText, readabilityScores, allLangFiles.length);
                     
                 }).catch(error => {
@@ -688,20 +702,17 @@
             const scores = {};
 
             try {
-                // Flesch Reading Ease (Note: This score can be 0-100, much higher range than others)
+                // Flesch Reading Ease
                 scores.fleschReadingEase = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
                 scores.fleschReadingEase = Math.max(0, Math.min(100, scores.fleschReadingEase));
-                console.log('Flesch Reading Ease calculated:', scores.fleschReadingEase);
 
                 // Flesch-Kincaid Grade Level
                 scores.fleschKincaidGrade = (0.39 * avgWordsPerSentence) + (11.8 * avgSyllablesPerWord) - 15.59;
                 scores.fleschKincaidGrade = Math.max(0, scores.fleschKincaidGrade);
-                console.log('Flesch-Kincaid Grade calculated:', scores.fleschKincaidGrade);
 
                 // Gunning Fog Index
                 const complexWordPercentage = (complexWords / wordCount) * 100;
                 scores.gunningFog = 0.4 * (avgWordsPerSentence + complexWordPercentage);
-                console.log('Gunning Fog calculated:', scores.gunningFog);
 
                 // SMOG Index
                 if (sentenceCount >= 3) {
@@ -709,17 +720,14 @@
                 } else {
                     scores.smogIndex = scores.gunningFog; // Fallback
                 }
-                console.log('SMOG Index calculated:', scores.smogIndex);
 
                 // Coleman-Liau Index
                 const avgCharsPerHundredWords = (characterCount / wordCount) * 100;
                 const avgSentencesPerHundredWords = (sentenceCount / wordCount) * 100;
                 scores.colemanLiau = (0.0588 * avgCharsPerHundredWords) - (0.296 * avgSentencesPerHundredWords) - 15.8;
-                console.log('Coleman-Liau calculated:', scores.colemanLiau);
 
                 // Automated Readability Index
                 scores.automatedReadability = (4.71 * avgCharsPerWord) + (0.5 * avgWordsPerSentence) - 21.43;
-                console.log('Automated Readability calculated:', scores.automatedReadability);
 
                 // Linsear Write Formula
                 const easyWords = words.filter(word => countSyllables(word) <= 2).length;
@@ -730,7 +738,6 @@
                 } else {
                     scores.linsearWrite = (scores.linsearWrite - 2) / 2;
                 }
-                console.log('Linsear Write calculated:', scores.linsearWrite);
 
                 // Additional statistics
                 scores.stats = {
@@ -777,3 +784,27 @@
             }
             
             return Math.max(1, syllables);
+        }
+
+        function displayAnalysis(largestFile, extractedText, scores, totalFiles) {
+            console.log('displayAnalysis called');
+            
+            if (!scores) {
+                showError('Could not analyze the text content');
+                return;
+            }
+
+            const results = document.getElementById('results');
+
+            // Calculate interpretation data
+            const gradeLevelScores = [
+                scores.fleschKincaidGrade || 0,
+                scores.gunningFog || 0,
+                scores.smogIndex || 0,
+                scores.colemanLiau || 0,
+                scores.automatedReadability || 0,
+                scores.linsearWrite || 0
+            ];
+            
+            const avgGradeLevel = gradeLevelScores.reduce((sum, score) => sum + score, 0) / gradeLevelScores.length;
+            const avgAge = Math.round(avgGradeLevel +
