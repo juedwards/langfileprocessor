@@ -1,5 +1,29 @@
 console.log('External script loading...');
 
+console.log('app.js starting...');
+
+// Check if libraries are available
+window.addEventListener('load', function() {
+    console.log('Window loaded');
+    console.log('JSZip available:', typeof JSZip !== 'undefined');
+    console.log('Chart available:', typeof Chart !== 'undefined');
+    
+    if (typeof JSZip === 'undefined') {
+        console.error('JSZip library failed to load');
+        document.body.innerHTML += '<div style="background:red;color:white;padding:20px;">JSZip library failed to load. Please check jszip.min.js file.</div>';
+        return;
+    }
+    
+    if (typeof Chart === 'undefined') {
+        console.error('Chart.js library failed to load');
+        document.body.innerHTML += '<div style="background:red;color:white;padding:20px;">Chart.js library failed to load. Please check chart.min.js file.</div>';
+        return;
+    }
+    
+    console.log('All libraries loaded successfully');
+});
+
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM ready, initializing app...');
     
