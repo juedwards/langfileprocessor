@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head><title>Button Test</title></head>
+<body>
+<h1>File Input Test</h1>
+<button id="testBtn">Test File Dialog</button>
+<input type="file" id="testFile" style="display:none">
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Test page loaded');
+    
+    const btn = document.getElementById('testBtn');
+    const input = document.getElementById('testFile');
+    
+    console.log('Button:', btn);
+    console.log('Input:', input);
+    
+    btn.addEventListener('click', function() {
+        console.log('Button clicked in test');
+        alert('Button clicked - opening file dialog');
+        input.click();
+    });
+    
+    input.addEventListener('change', function() {
+        console.log('File selected:', this.files[0].name);
+        alert('File selected: ' + this.files[0].name);
+    });
+});
+</script>
+</body>
+</html>
