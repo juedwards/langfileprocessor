@@ -217,32 +217,21 @@ window.onload = function() {
     }
 
     // Azure GPT integration
-    async function getGptAnalysis(languageSummary) {
-        const endpoint = "https://exammodels.cognitiveservices.azure.com/openai/deployments/gpt-4o/chat/completions?api-version=2025-01-01-preview";
-        const apiKey = "56CmLRmWZkP6gZfeEOcj4AWa8S3DqwOi2NSYJ3zqbH04cmTohVKbJQQJ99BFACYeBjFXJ3w3AAAAACOGDTTy";
-        const payload = {
-            messages: [
-                { role: "system", content: "You are an expert in language file analysis for Minecraft Education Edition. Provide a detailed and educationally relevant analysis based on the summary provided." },
-                { role: "user", content: `Here is a summary of the language file analysis:\n${languageSummary}` }
-            ],
-            max_tokens: 700
-        };
-        try {
-            const response = await fetch(endpoint, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "api-key": apiKey
-                },
-                body: JSON.stringify(payload)
-            });
-            if (!response.ok) throw new Error("Failed to fetch analysis from GPT-4o");
-            const data = await response.json();
-            return data.choices?.[0]?.message?.content || "No analysis returned.";
-        } catch (error) {
-            return `Error calling Azure GPT-4o: ${error.message}`;
-        }
+async function getGptAnalysis(languageSummary) {
+    // Point to your Node.js backend (adjust port if needed)
+    const endpoint = "http://localhost:3000/analyze";
+    try {
+        const response = await fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ summary: languageSummary })
+        });
+        const data = await response.json();
+        return data.result || "No analysis returned.";
+    } catch (error) {
+        return `Error calling backend: ${error.message}`;
     }
+}
 
     // Helper to produce a summary for the AI
     function generateAnalysisSummary(scores, totalFiles) {
