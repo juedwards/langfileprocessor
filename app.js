@@ -29,37 +29,21 @@ document.addEventListener('DOMContentLoaded', function() {
     
     const uploadArea = document.getElementById('uploadArea');
     const fileInput = document.getElementById('fileInput');
-    const chooseBtn = document.getElementById('chooseFileBtn');
     
-    if (!uploadArea || !fileInput || !chooseBtn) {
+    if (!uploadArea || !fileInput) {
         console.error('Required elements not found');
         return;
     }
     
     console.log('Elements found, adding listeners...');
     
-    // Button click handler
-    chooseBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        console.log('Choose button clicked');
-        fileInput.click();
-    });
-    
-    // Upload area click handler
-    uploadArea.addEventListener('click', function(e) {
-        if (e.target !== chooseBtn) {
-            console.log('Upload area clicked');
-            fileInput.click();
-        }
-    });
-    
-    // File change handler
+    // File change handler (main functionality)
     fileInput.addEventListener('change', function(e) {
         console.log('File selected in change handler');
         handleFile(e);
     });
     
-    // Drag and drop handlers
+    // Drag and drop handlers for upload area
     uploadArea.addEventListener('dragover', function(e) {
         e.preventDefault();
         uploadArea.classList.add('dragover');
