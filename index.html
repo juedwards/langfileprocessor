@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Language Analyser</title>
     <style>
         /* Complete CSS Reset */
@@ -116,19 +116,8 @@
             margin-bottom: 15px;
         }
 
-        /* Visually hidden but present file input (important for iOS/Safari) */
         .file-input {
-            position: absolute !important;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            overflow: hidden;
-            clip: rect(0 0 0 0);
-            clip-path: inset(50%);
-            white-space: nowrap;
-            border: 0;
-            padding: 0;
-            margin: -1px;
+            display: none;
         }
 
         .btn {
@@ -143,8 +132,6 @@
             transition: all 0.3s ease;
             box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 3px 0 #1a4a1a;
             margin: 5px;
-            display: inline-block;
-            user-select: none;
         }
 
         .btn:hover {
@@ -158,7 +145,7 @@
             box-shadow: inset 0 2px 0 rgba(255,255,255,0.2), 0 1px 0 #1a4a1a;
         }
 
-        .btn[aria-disabled="true"] {
+        .btn:disabled {
             background: #7a6b5d;
             color: #a0a0a0;
             cursor: not-allowed;
@@ -406,43 +393,29 @@
             <h1>Language Analyser</h1>
             <p>Extract and analyze language files from .mcworld and .mctemplate files</p>
         </div>
-
+        
         <div class="content">
             <div class="upload-area" id="uploadArea">
                 <div class="upload-text">Drop your .mcworld or .mctemplate file here or click to browse</div>
-
-                <!-- File input FIRST so the label can target it -->
-                <input
-                    type="file"
-                    class="file-input"
-                    id="fileInput"
-                    accept=".mcworld,.mctemplate"
-                    title="Select .mcworld or .mctemplate file"
-                    aria-hidden="true"
-                />
-
-                <!-- Label acts as the button; reliably opens the picker on all browsers -->
-                <label class="btn" id="chooseFileBtn" for="fileInput" role="button">Choose File</label>
+                <button class="btn" id="chooseFileBtn">Choose File</button>
+                <input type="file" class="file-input" id="fileInput" accept=".mcworld,.mctemplate" title="Select .mcworld or .mctemplate file">
             </div>
-
+            
             <div class="loading" id="loading">
                 <div class="spinner"></div>
                 <p>Processing your file...</p>
             </div>
-
+            
             <div class="progress" id="progressContainer" style="display: none;">
                 <div class="progress-bar" id="progressBar"></div>
             </div>
-
+            
             <div id="results"></div>
         </div>
     </div>
 
-    <!-- Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" integrity="sha512-3Tn2F2nqZ0Y8Qm9v1xJkX6mG+Ew8Zxq0Kc3kqQO4nL3w8wq7mJpM9k9t8zY5qkqQaqm2l3rG4kVq8m7K3kQrtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js" integrity="sha512-BL5m3k2QvQyKpIq2V2Qm1U5C2yQyQk0q7w5f2u2fF1+o7D0w0wqkQY4gJzZt7b3iV3cR5cQZ7rj3mJb4nN7U+g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
-    <!-- Your app -->
+    <script src="jszip.min.js"></script>
+    <script src="chart.min.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
